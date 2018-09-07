@@ -2,6 +2,7 @@ const parseScenario = require('../modules/translate/scenario')
 const parseLangMsg = require('../modules/translate/langMsg')
 const parseSkill = require('../modules/translate/skill')
 const parseNewquest = require('../modules/translate/new-quest')
+const dataCollection = require('../modules/data-collection')
 const { getUserInfo, getUserName } = require('../modules/info/user')
 const { transUI } = require('../modules/translate/ui-css')
 const CONFIG = require('../config.js')
@@ -119,6 +120,8 @@ module.exports = {
           result = await skillProcess(result, uid, pathname)
         }
       }
+
+      await dataCollection(result, uid, pathname)
     }
 
     return result
