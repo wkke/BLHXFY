@@ -47,7 +47,41 @@ const collection = async (result, uid, pathname) => {
       await saveList(list)
     }
 
+  } else if (pathname.includes('/zenith/ability_list/')) {
+    const list = []
+    const data = JSON.parse(body)
+    if (data.ability_list) {
+      for (let key in data.ability_list) {
+
+        let item = data.ability_list[key]
+        if (!item) continue
+        list.push({
+          id: item.action_id,
+          name: item.name,
+          detail: item.comment
+        })
+      }
+      await saveList(list)
+    }
+  } else if (pathname.includes('/party_ability_subaction')) {
+    const list = []
+    const data = JSON.parse(body)
+    if (data.list) {
+      for (let key in data.list) {
+
+        let item = data.list[key]
+        if (!item) continue
+        list.push({
+          id: item.action_id,
+          name: item.name,
+          detail: item.comment
+        })
+      }
+      await saveList(list)
+    }
   }
+
+
 }
 
 module.exports = collection
