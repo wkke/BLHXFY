@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         碧蓝幻想翻译兼容版
 // @namespace    https://github.com/biuuu/BLHXFY
-// @version      0.10.6
+// @version      0.10.7
 // @description  碧蓝幻想的汉化脚本，提交新翻译请到 https://github.com/biuuu/BLHXFY
 // @icon         http://game.granbluefantasy.jp/favicon.ico
 // @author       biuuu
@@ -9082,8 +9082,29 @@
     return null;
   };
 
+  var collectNameHtml = function collectNameHtml(str) {
+    if (!str) return str;
+    var name = str;
+    var html = '';
+    var rgs = name.match(/<[^>]+>([^<]*)<\/[^>]+>/);
+
+    if (rgs && rgs[1]) {
+      name = rgs[1];
+      html = str.replace(name, '$name');
+    }
+
+    return {
+      name: name,
+      html: html
+    };
+  };
+
   var replaceChar = function replaceChar(key, item, map, scenarioName) {
-    var name = item[key] ? item[key].trim() : null;
+    var nameStr = item[key] ? item[key].trim() : '';
+
+    var _collectNameHtml = collectNameHtml(nameStr),
+        name = _collectNameHtml.name,
+        html = _collectNameHtml.html;
 
     if (name && name !== 'null' && name !== '???' && name !== '？？？') {
       var trans = getNameTrans(name, map, scenarioName);
@@ -9112,6 +9133,10 @@
       }
 
       if (trans) {
+        if (html) {
+          trans = html.replace('$name', trans);
+        }
+
         item[key] = trans;
       } else if (trans !== '') {
         return _name;
