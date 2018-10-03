@@ -43,7 +43,7 @@ id,en,jp,trans
 97,,……すまない。,......抱歉。
 98,,<span class='scene-font-katari'>そしてシルヴァは</span><span class='scene-font-place'>バルツ</span><span class='scene-font-katari'>に来た理由や</span><br><span class='scene-font-katari'>責任者である</span><br><span class='scene-font-katari'>ククル達の伯父の特徴を伝える。</span>,接着席尔瓦告诉了索恩来瓦尔茨的原因，和管理者也就是库库鲁们伯父的特征。
 103,,探し回ってみたんだが、<br>中々見つけられなくて……<br>君の眼を借りられないだろうか？,我试着找过，但没有找到......能借用你的眼睛帮忙吗？
-104,,ええ、もちろんいいわよ。<br>私に任せて。嗯，当然。交给我吧。,
+104,,ええ、もちろんいいわよ。<br>私に任せて。,嗯，当然。交给我吧。
 105,,こちらから誘っておいたのに、<br>こんなことを頼んですまない。,明明是我邀请你来，却拜托你这样的事，抱歉。
 106,,気にしないで、<br>ちょっと周りを見てみるだけだもの。,不要介意啦。只不过是看看周围而已。
 120,,<span class='scene-font-katari'>さっきまでのぎこちない空気は去り、</span><br><span class='scene-font-katari'>ソーンはどこか安心した様子で</span><br><span class='scene-font-katari'>眼下の街に目を走らせる。</span>,之前凝重的气氛已经消散，索恩略带安心地环视底下的街道。
@@ -243,3 +243,4 @@ id,en,jp,trans
 364,,<span class='scene-font-kokoro'>（ソーン……</span><br><span class='scene-font-kokoro'>私はまだまだ未熟者だ……</span><br><span class='scene-font-kokoro'>君にはとうてい敵わない……）</span>,（索恩 ......我还是这么不成熟呢......怎么也敌不过你......）
 365,,<span class='scene-font-katari'>狙撃手として名を馳せるシルヴァだが</span><br><span class='scene-font-katari'>誰にもこの悩みを相談できず</span><br><span class='scene-font-katari'>密かに反省するのだった。</span>,虽然作为狙击手名声在外，但谁也没法和自己商量这个苦恼的席尔瓦，正在悄悄反省中。
 info,,1,scene_fate_chr496_ep1
+,,,
