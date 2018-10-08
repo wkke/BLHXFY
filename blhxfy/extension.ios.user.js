@@ -6799,13 +6799,17 @@
 	    }
 	  } else if (/\/party\/ability_list\/\d+\//.test(pathname)) {
 	    data = await replaceSkill(data);
-	  } else {
+	  } else if (/\/party\/job_info\/\d+\//.test(pathname)) {
 	    if (data.after_job_master) {
 	      data.after_job_master = await replaceSkill(data.after_job_master);
 	    }
 
 	    if (data.before_job_info) {
 	      data.before_job_info = await replaceSkill(data.before_job_info);
+	    }
+	  } else if (/\/zenith\/ability_list\/\d+/.test(pathname)) {
+	    if (data.ability_list) {
+	      data.list = await startTrans(data.ability_list);
 	    }
 	  }
 
@@ -7320,7 +7324,7 @@
 	      }
 	    } else if (pathname.includes('/npc/npc/') || pathname.includes('/archive/npc_detail')) {
 	      data = await parseSkill(data, pathname);
-	    } else if (pathname.includes('/party_ability_subaction/') || pathname.includes('/party/job/') || pathname.includes('/party/ability_list/') || pathname.includes('/party/job_info/')) {
+	    } else if (pathname.includes('/party_ability_subaction/') || pathname.includes('/party/job/') || pathname.includes('/party/ability_list/') || pathname.includes('/zenith/ability_list/') || pathname.includes('/party/job_info/')) {
 	      data = await transSkill$1(data, pathname);
 	    } else if (pathname.includes('/island/init')) {
 	      data = await transIslandInfo(data, pathname);

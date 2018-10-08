@@ -10108,7 +10108,7 @@
               data.job = _context3.sent;
 
             case 5:
-              _context3.next = 29;
+              _context3.next = 36;
               break;
 
             case 7:
@@ -10129,7 +10129,7 @@
               data.list = _context3.sent;
 
             case 12:
-              _context3.next = 29;
+              _context3.next = 36;
               break;
 
             case 14:
@@ -10143,10 +10143,14 @@
 
             case 17:
               data = _context3.sent;
-              _context3.next = 29;
+              _context3.next = 36;
               break;
 
             case 20:
+              if (!/\/party\/job_info\/\d+\//.test(pathname)) {
+                _context3.next = 31;
+                break;
+              }
 
               if (!data.after_job_master) {
                 _context3.next = 25;
@@ -10172,9 +10176,30 @@
               data.before_job_info = _context3.sent;
 
             case 29:
+              _context3.next = 36;
+              break;
+
+            case 31:
+              if (!/\/zenith\/ability_list\/\d+/.test(pathname)) {
+                _context3.next = 36;
+                break;
+              }
+
+              if (!data.ability_list) {
+                _context3.next = 36;
+                break;
+              }
+
+              _context3.next = 35;
+              return startTrans(data.ability_list);
+
+            case 35:
+              data.list = _context3.sent;
+
+            case 36:
               return _context3.abrupt("return", data);
 
-            case 30:
+            case 37:
             case "end":
               return _context3.stop();
           }
@@ -11339,7 +11364,7 @@
               break;
 
             case 34:
-              if (!(pathname.includes('/party_ability_subaction/') || pathname.includes('/party/job/') || pathname.includes('/party/ability_list/') || pathname.includes('/party/job_info/'))) {
+              if (!(pathname.includes('/party_ability_subaction/') || pathname.includes('/party/job/') || pathname.includes('/party/ability_list/') || pathname.includes('/zenith/ability_list/') || pathname.includes('/party/job_info/'))) {
                 _context.next = 40;
                 break;
               }
