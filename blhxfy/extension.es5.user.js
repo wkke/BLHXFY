@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         碧蓝幻想翻译兼容版
 // @namespace    https://github.com/biuuu/BLHXFY
-// @version      0.10.7
+// @version      0.11.0
 // @description  碧蓝幻想的汉化脚本，提交新翻译请到 https://github.com/biuuu/BLHXFY
 // @icon         http://game.granbluefantasy.jp/favicon.ico
 // @author       biuuu
@@ -9666,6 +9666,169 @@
     return str.replace('ターン', '回合').replace('turns', '回合').replace('turn', '回合').replace('Cooldown:', '使用间隔:').replace('使用間隔:', '使用间隔:');
   }
 
+  var trim = function trim(str) {
+    if (!str) return '';
+    return str.trim();
+  };
+
+  var buffMap = {
+    buff: new Map(),
+    debuff: new Map()
+  };
+  var loaded$2 = false;
+
+  var getData =
+  /*#__PURE__*/
+  function () {
+    var _ref = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee(type) {
+      var csv, list;
+      return regeneratorRuntime.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              csv = getLocalData(type);
+
+              if (csv) {
+                _context.next = 6;
+                break;
+              }
+
+              _context.next = 4;
+              return fetchWithHash("/blhxfy/data/".concat(type, ".csv"));
+
+            case 4:
+              csv = _context.sent;
+              setLocalData(type, csv);
+
+            case 6:
+              list = parseCsv(csv);
+              list.forEach(function (item) {
+                var detail = trim(item.detail);
+                var trans = trim(item.trans);
+
+                if (detail && trans) {
+                  buffMap[type].set(detail, trans);
+                }
+              });
+
+            case 8:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee, this);
+    }));
+
+    return function getData(_x) {
+      return _ref.apply(this, arguments);
+    };
+  }();
+
+  var getBuffData =
+  /*#__PURE__*/
+  function () {
+    var _ref2 = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee2(type) {
+      return regeneratorRuntime.wrap(function _callee2$(_context2) {
+        while (1) {
+          switch (_context2.prev = _context2.next) {
+            case 0:
+              if (loaded$2) {
+                _context2.next = 6;
+                break;
+              }
+
+              _context2.next = 3;
+              return getData('buff');
+
+            case 3:
+              _context2.next = 5;
+              return getData('debuff');
+
+            case 5:
+              loaded$2 = true;
+
+            case 6:
+              return _context2.abrupt("return", buffMap[type]);
+
+            case 7:
+            case "end":
+              return _context2.stop();
+          }
+        }
+      }, _callee2, this);
+    }));
+
+    return function getBuffData(_x2) {
+      return _ref2.apply(this, arguments);
+    };
+  }();
+
+  var transBuff =
+  /*#__PURE__*/
+  function () {
+    var _ref = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee(data) {
+      var keys, _i, key, buffMap, k, item;
+
+      return regeneratorRuntime.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              keys = ['buff', 'debuff'];
+              _i = 0;
+
+            case 2:
+              if (!(_i < keys.length)) {
+                _context.next = 12;
+                break;
+              }
+
+              key = keys[_i];
+
+              if (!data[key]) {
+                _context.next = 9;
+                break;
+              }
+
+              _context.next = 7;
+              return getBuffData(key);
+
+            case 7:
+              buffMap = _context.sent;
+
+              for (k in data[key]) {
+                item = data[key][k];
+
+                if (item.detail && buffMap.has(item.detail)) {
+                  item.detail = buffMap.get(item.detail);
+                }
+
+                if (item.effect) item.effect = replaceTurn(item.effect);
+              }
+
+            case 9:
+              _i++;
+              _context.next = 2;
+              break;
+
+            case 12:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee, this);
+    }));
+
+    return function transBuff(_x) {
+      return _ref.apply(this, arguments);
+    };
+  }();
+
   var elemtRE = '([光闇水火風土]|light|dark|water|wind|earth|fire)';
   var elemtMap = {
     light: '光',
@@ -9779,7 +9942,7 @@
     var _ref2 = _asyncToGenerator(
     /*#__PURE__*/
     regeneratorRuntime.mark(function _callee(data, pathname) {
-      var npcId, skillState, skillData, translated, keys, trans, _trans2, _trans3;
+      var npcId, skillState, skillData, translated, keys, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, item, key1, key2, ability, _getPlusStr, _getPlusStr2, plus1, plus2, _trans4, trans, _trans2, _trans3;
 
       return regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
@@ -9837,58 +10000,145 @@
               translated = new Map();
               keys = skillState.skillKeys;
 
-              if (skillData) {
-                keys.forEach(function (item) {
-                  var key1 = item[0];
-                  var key2 = item[1];
-                  var ability = data[key1];
-
-                  if (!ability) {
-                    if (!data.ability) return;
-                    ability = data.ability[key1];
-                    if (!ability) return;
-                  }
-
-                  if (ability.recast_comment) {
-                    ability.recast_comment = replaceTurn(ability.recast_comment);
-                  }
-
-                  var _getPlusStr = getPlusStr(ability.name),
-                      _getPlusStr2 = _slicedToArray(_getPlusStr, 2),
-                      plus1 = _getPlusStr2[0],
-                      plus2 = _getPlusStr2[1];
-
-                  var trans = skillData[key2 + plus2];
-
-                  if (!trans) {
-                    trans = skillData[key2];
-                    if (!trans) return;
-                  }
-
-                  if (trans.name) {
-                    ability.name = trans.name + plus1;
-                  }
-
-                  if (trans.detail) {
-                    ability.comment = trans.detail;
-                    translated.set(key1, true);
-                  }
-                });
-
-                if (data.master) {
-                  trans = skillData['npc'];
-                  if (trans && trans.name) data.master.name = trans.name;
-                } else if (data.name) {
-                  _trans2 = skillData['npc'];
-                  if (_trans2) data.name = _trans2.name;
-                }
-
-                if (data.comment) {
-                  _trans3 = skillData['intro'];
-                  if (_trans3) data.comment = _trans3.detail;
-                }
+              if (!skillData) {
+                _context.next = 66;
+                break;
               }
 
+              _iteratorNormalCompletion2 = true;
+              _didIteratorError2 = false;
+              _iteratorError2 = undefined;
+              _context.prev = 22;
+              _iterator2 = keys[Symbol.iterator]();
+
+            case 24:
+              if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
+                _context.next = 50;
+                break;
+              }
+
+              item = _step2.value;
+              key1 = item[0];
+              key2 = item[1];
+              ability = data[key1];
+
+              if (ability) {
+                _context.next = 35;
+                break;
+              }
+
+              if (data.ability) {
+                _context.next = 32;
+                break;
+              }
+
+              return _context.abrupt("continue", 47);
+
+            case 32:
+              ability = data.ability[key1];
+
+              if (ability) {
+                _context.next = 35;
+                break;
+              }
+
+              return _context.abrupt("continue", 47);
+
+            case 35:
+              if (!ability.ability_detail) {
+                _context.next = 38;
+                break;
+              }
+
+              _context.next = 38;
+              return transBuff(ability.ability_detail);
+
+            case 38:
+              if (ability.recast_comment) {
+                ability.recast_comment = replaceTurn(ability.recast_comment);
+              }
+
+              _getPlusStr = getPlusStr(ability.name), _getPlusStr2 = _slicedToArray(_getPlusStr, 2), plus1 = _getPlusStr2[0], plus2 = _getPlusStr2[1];
+              _trans4 = skillData[key2 + plus2];
+
+              if (_trans4) {
+                _context.next = 45;
+                break;
+              }
+
+              _trans4 = skillData[key2];
+
+              if (_trans4) {
+                _context.next = 45;
+                break;
+              }
+
+              return _context.abrupt("continue", 47);
+
+            case 45:
+              if (_trans4.name) {
+                ability.name = _trans4.name + plus1;
+              }
+
+              if (_trans4.detail) {
+                ability.comment = _trans4.detail;
+                translated.set(key1, true);
+              }
+
+            case 47:
+              _iteratorNormalCompletion2 = true;
+              _context.next = 24;
+              break;
+
+            case 50:
+              _context.next = 56;
+              break;
+
+            case 52:
+              _context.prev = 52;
+              _context.t0 = _context["catch"](22);
+              _didIteratorError2 = true;
+              _iteratorError2 = _context.t0;
+
+            case 56:
+              _context.prev = 56;
+              _context.prev = 57;
+
+              if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
+                _iterator2.return();
+              }
+
+            case 59:
+              _context.prev = 59;
+
+              if (!_didIteratorError2) {
+                _context.next = 62;
+                break;
+              }
+
+              throw _iteratorError2;
+
+            case 62:
+              return _context.finish(59);
+
+            case 63:
+              return _context.finish(56);
+
+            case 64:
+              if (data.master) {
+                trans = skillData['npc'];
+                if (trans && trans.name) data.master.name = trans.name;
+              } else if (data.name) {
+                _trans2 = skillData['npc'];
+                if (_trans2) data.name = _trans2.name;
+              }
+
+              if (data.comment) {
+                _trans3 = skillData['intro'];
+                if (_trans3) data.comment = _trans3.detail;
+              }
+
+            case 66:
               keys.forEach(function (item) {
                 if (!translated.get(item[0])) {
                   var skill = data[item[0]];
@@ -9900,12 +10150,12 @@
               });
               return _context.abrupt("return", data);
 
-            case 21:
+            case 68:
             case "end":
               return _context.stop();
           }
         }
-      }, _callee, this);
+      }, _callee, this, [[22, 52, 56, 64], [57,, 59, 63]]);
     }));
 
     return function parseSkill(_x, _x2) {
@@ -9914,7 +10164,7 @@
   }();
 
   var skillMap$1 = new Map();
-  var loaded$2 = false;
+  var loaded$3 = false;
 
   var getSkillData$1 =
   /*#__PURE__*/
@@ -9927,7 +10177,7 @@
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              if (loaded$2) {
+              if (loaded$3) {
                 _context.next = 7;
                 break;
               }
@@ -9948,7 +10198,7 @@
                   });
                 }
               });
-              loaded$2 = true;
+              loaded$3 = true;
 
             case 7:
               trans = skillMap$1.get(id);
@@ -9982,14 +10232,14 @@
 
             case 1:
               if ((_context.t1 = _context.t0()).done) {
-                _context.next = 12;
+                _context.next = 15;
                 break;
               }
 
               key = _context.t1.value;
 
               if (!data[key]) {
-                _context.next = 10;
+                _context.next = 13;
                 break;
               }
 
@@ -10012,14 +10262,22 @@
                 data[key].turn_comment = replaceTurn(data[key].turn_comment);
               }
 
-            case 10:
+              if (!data[key].ability_detail) {
+                _context.next = 13;
+                break;
+              }
+
+              _context.next = 13;
+              return transBuff(data[key].ability_detail);
+
+            case 13:
               _context.next = 1;
               break;
 
-            case 12:
+            case 15:
               return _context.abrupt("return", data);
 
-            case 13:
+            case 16:
             case "end":
               return _context.stop();
           }
@@ -10213,9 +10471,9 @@
   }();
 
   var htmlMap = new Map();
-  var loaded$3 = false;
+  var loaded$4 = false;
 
-  var trim = function trim(str) {
+  var trim$1 = function trim(str) {
     if (!str) return '';
     return str.trim();
   };
@@ -10231,7 +10489,7 @@
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              if (loaded$3) {
+              if (loaded$4) {
                 _context.next = 10;
                 break;
               }
@@ -10253,9 +10511,9 @@
             case 7:
               list = parseCsv(csv);
               sortKeywords(list, 'text').forEach(function (item) {
-                var pathname = trim(item.path);
-                var text = trim(item.text);
-                var trans = trim(item.trans);
+                var pathname = trim$1(item.path);
+                var text = trim$1(item.text);
+                var trans = trim$1(item.trans);
                 var times = item.count | 0 || 1;
 
                 if (pathname && text && trans) {
@@ -10274,7 +10532,7 @@
                   }
                 }
               });
-              loaded$3 = true;
+              loaded$4 = true;
 
             case 10:
               return _context.abrupt("return", htmlMap);
@@ -10293,9 +10551,9 @@
   }();
 
   var htmlMap$1 = new Map();
-  var loaded$4 = false;
+  var loaded$5 = false;
 
-  var trim$1 = function trim(str) {
+  var trim$2 = function trim(str) {
     if (!str) return '';
     return str.trim();
   };
@@ -10311,7 +10569,7 @@
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              if (loaded$4) {
+              if (loaded$5) {
                 _context.next = 7;
                 break;
               }
@@ -10323,8 +10581,8 @@
               csv = _context.sent;
               list = parseCsv(csv);
               sortKeywords(list, 'text').forEach(function (item) {
-                var text = trim$1(item.text);
-                var trans = trim$1(item.trans);
+                var text = trim$2(item.text);
+                var trans = trim$2(item.trans);
                 var times = item.count | 0 || 1;
 
                 if (text && trans) {
@@ -10334,7 +10592,7 @@
                   });
                 }
               });
-              loaded$4 = true;
+              loaded$5 = true;
 
             case 7:
               return _context.abrupt("return", htmlMap$1);
@@ -10622,9 +10880,9 @@
   }
 
   var townMap = new Map();
-  var loaded$5 = false;
+  var loaded$6 = false;
 
-  var trim$2 = function trim(str) {
+  var trim$3 = function trim(str) {
     if (!str) return '';
     return str.trim();
   };
@@ -10640,7 +10898,7 @@
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              if (loaded$5) {
+              if (loaded$6) {
                 _context.next = 7;
                 break;
               }
@@ -10652,10 +10910,10 @@
               csv = _context.sent;
               list = parseCsv(csv);
               list.forEach(function (item) {
-                var id = trim$2(item.id);
-                var name = trim$2(item.name);
-                var detail = trim$2(item.detail);
-                var vyrn = trim$2(item.vyrn);
+                var id = trim$3(item.id);
+                var name = trim$3(item.name);
+                var detail = trim$3(item.detail);
+                var vyrn = trim$3(item.vyrn);
 
                 if (id && name) {
                   townMap.set(id, {
@@ -10665,7 +10923,7 @@
                   });
                 }
               });
-              loaded$5 = true;
+              loaded$6 = true;
 
             case 7:
               return _context.abrupt("return", townMap);
@@ -10743,9 +11001,9 @@
   }
 
   var islandMap = new Map();
-  var loaded$6 = false;
+  var loaded$7 = false;
 
-  var trim$3 = function trim(str) {
+  var trim$4 = function trim(str) {
     if (!str) return '';
     return str.trim();
   };
@@ -10761,7 +11019,7 @@
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              if (loaded$6) {
+              if (loaded$7) {
                 _context.next = 7;
                 break;
               }
@@ -10773,9 +11031,9 @@
               csv = _context.sent;
               list = parseCsv(csv);
               list.forEach(function (item) {
-                var id = trim$3(item.id);
-                var name = trim$3(item.name);
-                var detail = trim$3(item.detail);
+                var id = trim$4(item.id);
+                var name = trim$4(item.name);
+                var detail = trim$4(item.detail);
 
                 if (id && name) {
                   islandMap.set(id, {
@@ -10788,7 +11046,7 @@
                   }
                 }
               });
-              loaded$6 = true;
+              loaded$7 = true;
 
             case 7:
               return _context.abrupt("return", islandMap);
@@ -10867,9 +11125,9 @@
   }
 
   var chatMap = new Map();
-  var loaded$7 = false;
+  var loaded$8 = false;
 
-  var trim$4 = function trim(str) {
+  var trim$5 = function trim(str) {
     if (!str) return '';
     return str.trim();
   };
@@ -10885,7 +11143,7 @@
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              if (loaded$7) {
+              if (loaded$8) {
                 _context.next = 10;
                 break;
               }
@@ -10907,14 +11165,14 @@
             case 7:
               list = parseCsv(csv);
               list.forEach(function (item) {
-                var id = trim$4(item.id);
-                var trans = trim$4(item.trans);
+                var id = trim$5(item.id);
+                var trans = trim$5(item.trans);
 
                 if (id && trans) {
                   chatMap.set(id, trans);
                 }
               });
-              loaded$7 = true;
+              loaded$8 = true;
 
             case 10:
               return _context.abrupt("return", chatMap);
@@ -10984,9 +11242,9 @@
   }
 
   var voiceMap = new Map();
-  var loaded$8 = false;
+  var loaded$9 = false;
 
-  var trim$5 = function trim(str) {
+  var trim$6 = function trim(str) {
     if (!str) return '';
     return str.trim();
   };
@@ -11002,7 +11260,7 @@
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              if (loaded$8) {
+              if (loaded$9) {
                 _context.next = 7;
                 break;
               }
@@ -11014,9 +11272,9 @@
               csv = _context.sent;
               list = parseCsv(csv);
               list.forEach(function (item) {
-                var path = trim$5(item.path);
-                var trans = trim$5(item.trans);
-                var duration = trim$5(item.duration) || 10;
+                var path = trim$6(item.path);
+                var trans = trim$6(item.trans);
+                var duration = trim$6(item.duration) || 10;
 
                 if (path && trans) {
                   voiceMap.set(path, {
@@ -11025,7 +11283,7 @@
                   });
                 }
               });
-              loaded$8 = true;
+              loaded$9 = true;
 
             case 7:
               return _context.abrupt("return", voiceMap);
@@ -11295,7 +11553,7 @@
               }
 
               if (!(apiHosts.indexOf(hostname) !== -1)) {
-                _context.next = 60;
+                _context.next = 65;
                 break;
               }
 
@@ -11310,7 +11568,7 @@
 
             case 11:
               data = _context.sent;
-              _context.next = 58;
+              _context.next = 63;
               break;
 
             case 14:
@@ -11346,7 +11604,7 @@
               data = _context.sent;
 
             case 26:
-              _context.next = 58;
+              _context.next = 63;
               break;
 
             case 28:
@@ -11360,7 +11618,7 @@
 
             case 31:
               data = _context.sent;
-              _context.next = 58;
+              _context.next = 63;
               break;
 
             case 34:
@@ -11374,7 +11632,7 @@
 
             case 37:
               data = _context.sent;
-              _context.next = 58;
+              _context.next = 63;
               break;
 
             case 40:
@@ -11388,7 +11646,7 @@
 
             case 43:
               data = _context.sent;
-              _context.next = 58;
+              _context.next = 63;
               break;
 
             case 46:
@@ -11401,7 +11659,7 @@
               return showVoiceSub(data, pathname, 'list');
 
             case 49:
-              _context.next = 58;
+              _context.next = 63;
               break;
 
             case 51:
@@ -11415,23 +11673,36 @@
 
             case 54:
               data = _context.sent;
-              _context.next = 58;
+              _context.next = 63;
               break;
 
             case 57:
-              return _context.abrupt("return");
+              if (!/\/rest\/multiraid\/condition\/\d+\/\d\/\d\.json/.test(pathname)) {
+                _context.next = 62;
+                break;
+              }
 
-            case 58:
-              _context.next = 61;
-              break;
+              _context.next = 60;
+              return transBuff(data.condition);
 
             case 60:
-              return _context.abrupt("return");
-
-            case 61:
-              state.result = isJSON ? JSON.stringify(data) : data;
+              _context.next = 63;
+              break;
 
             case 62:
+              return _context.abrupt("return");
+
+            case 63:
+              _context.next = 66;
+              break;
+
+            case 65:
+              return _context.abrupt("return");
+
+            case 66:
+              state.result = isJSON ? JSON.stringify(data) : data;
+
+            case 67:
             case "end":
               return _context.stop();
           }

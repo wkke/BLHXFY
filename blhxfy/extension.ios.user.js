@@ -6574,6 +6574,66 @@
 	  return str.replace('ターン', '回合').replace('turns', '回合').replace('turn', '回合').replace('Cooldown:', '使用间隔:').replace('使用間隔:', '使用间隔:');
 	}
 
+	const trim = str => {
+	  if (!str) return '';
+	  return str.trim();
+	};
+
+	const buffMap = {
+	  buff: new Map(),
+	  debuff: new Map()
+	};
+	let loaded$2 = false;
+
+	const getData = async type => {
+	  let csv = getLocalData(type);
+
+	  if (!csv) {
+	    csv = await fetchWithHash(`/blhxfy/data/${type}.csv`);
+	    setLocalData(type, csv);
+	  }
+
+	  const list = parseCsv(csv);
+	  list.forEach(item => {
+	    const detail = trim(item.detail);
+	    const trans = trim(item.trans);
+
+	    if (detail && trans) {
+	      buffMap[type].set(detail, trans);
+	    }
+	  });
+	};
+
+	const getBuffData = async type => {
+	  if (!loaded$2) {
+	    await getData('buff');
+	    await getData('debuff');
+	    loaded$2 = true;
+	  }
+
+	  return buffMap[type];
+	};
+
+	const transBuff = async data => {
+	  const keys = ['buff', 'debuff'];
+
+	  for (let key of keys) {
+	    if (data[key]) {
+	      const buffMap = await getBuffData(key);
+
+	      for (let k in data[key]) {
+	        const item = data[key][k];
+
+	        if (item.detail && buffMap.has(item.detail)) {
+	          item.detail = buffMap.get(item.detail);
+	        }
+
+	        if (item.effect) item.effect = replaceTurn(item.effect);
+	      }
+	    }
+	  }
+	};
+
 	const elemtRE = '([光闇水火風土]|light|dark|water|wind|earth|fire)';
 	const elemtMap = {
 	  light: '光',
@@ -6670,15 +6730,19 @@
 	  const keys = skillState.skillKeys;
 
 	  if (skillData) {
-	    keys.forEach(item => {
+	    for (let item of keys) {
 	      const key1 = item[0];
 	      const key2 = item[1];
 	      let ability = data[key1];
 
 	      if (!ability) {
-	        if (!data.ability) return;
+	        if (!data.ability) continue;
 	        ability = data.ability[key1];
-	        if (!ability) return;
+	        if (!ability) continue;
+	      }
+
+	      if (ability.ability_detail) {
+	        await transBuff(ability.ability_detail);
 	      }
 
 	      if (ability.recast_comment) {
@@ -6690,7 +6754,7 @@
 
 	      if (!trans) {
 	        trans = skillData[key2];
-	        if (!trans) return;
+	        if (!trans) continue;
 	      }
 
 	      if (trans.name) {
@@ -6701,7 +6765,7 @@
 	        ability.comment = trans.detail;
 	        translated.set(key1, true);
 	      }
-	    });
+	    }
 
 	    if (data.master) {
 	      const trans = skillData['npc'];
@@ -6730,10 +6794,10 @@
 	};
 
 	const skillMap$1 = new Map();
-	let loaded$2 = false;
+	let loaded$3 = false;
 
 	const getSkillData$1 = async id => {
-	  if (!loaded$2) {
+	  if (!loaded$3) {
 	    const csv = await fetchWithHash('/blhxfy/data/job-skill.csv');
 	    const list = parseCsv(csv);
 	    list.forEach(item => {
@@ -6746,7 +6810,7 @@
 	        });
 	      }
 	    });
-	    loaded$2 = true;
+	    loaded$3 = true;
 	  }
 
 	  const trans = skillMap$1.get(id);
@@ -6769,6 +6833,10 @@
 
 	      if (data[key].turn_comment) {
 	        data[key].turn_comment = replaceTurn(data[key].turn_comment);
+	      }
+
+	      if (data[key].ability_detail) {
+	        await transBuff(data[key].ability_detail);
 	      }
 	    }
 	  }
@@ -6817,15 +6885,15 @@
 	};
 
 	const htmlMap = new Map();
-	let loaded$3 = false;
+	let loaded$4 = false;
 
-	const trim = str => {
+	const trim$1 = str => {
 	  if (!str) return '';
 	  return str.trim();
 	};
 
 	const getCommHtmlData = async () => {
-	  if (!loaded$3) {
+	  if (!loaded$4) {
 	    let csv = getLocalData('common-html');
 
 	    if (!csv) {
@@ -6835,9 +6903,9 @@
 
 	    const list = parseCsv(csv);
 	    sortKeywords(list, 'text').forEach(item => {
-	      const pathname = trim(item.path);
-	      const text = trim(item.text);
-	      const trans = trim(item.trans);
+	      const pathname = trim$1(item.path);
+	      const text = trim$1(item.text);
+	      const trans = trim$1(item.trans);
 	      const times = item.count | 0 || 1;
 
 	      if (pathname && text && trans) {
@@ -6856,27 +6924,27 @@
 	        }
 	      }
 	    });
-	    loaded$3 = true;
+	    loaded$4 = true;
 	  }
 
 	  return htmlMap;
 	};
 
 	const htmlMap$1 = new Map();
-	let loaded$4 = false;
+	let loaded$5 = false;
 
-	const trim$1 = str => {
+	const trim$2 = str => {
 	  if (!str) return '';
 	  return str.trim();
 	};
 
 	const getArchiveData = async () => {
-	  if (!loaded$4) {
+	  if (!loaded$5) {
 	    const csv = await fetchWithHash('/blhxfy/data/archive.csv');
 	    const list = parseCsv(csv);
 	    sortKeywords(list, 'text').forEach(item => {
-	      const text = trim$1(item.text);
-	      const trans = trim$1(item.trans);
+	      const text = trim$2(item.text);
+	      const trans = trim$2(item.trans);
 	      const times = item.count | 0 || 1;
 
 	      if (text && trans) {
@@ -6886,7 +6954,7 @@
 	        });
 	      }
 	    });
-	    loaded$4 = true;
+	    loaded$5 = true;
 	  }
 
 	  return htmlMap$1;
@@ -6955,22 +7023,22 @@
 	}
 
 	const townMap = new Map();
-	let loaded$5 = false;
+	let loaded$6 = false;
 
-	const trim$2 = str => {
+	const trim$3 = str => {
 	  if (!str) return '';
 	  return str.trim();
 	};
 
 	const getTownData = async () => {
-	  if (!loaded$5) {
+	  if (!loaded$6) {
 	    const csv = await fetchWithHash('/blhxfy/data/town-info.csv');
 	    const list = parseCsv(csv);
 	    list.forEach(item => {
-	      const id = trim$2(item.id);
-	      const name = trim$2(item.name);
-	      const detail = trim$2(item.detail);
-	      const vyrn = trim$2(item.vyrn);
+	      const id = trim$3(item.id);
+	      const name = trim$3(item.name);
+	      const detail = trim$3(item.detail);
+	      const vyrn = trim$3(item.vyrn);
 
 	      if (id && name) {
 	        townMap.set(id, {
@@ -6980,7 +7048,7 @@
 	        });
 	      }
 	    });
-	    loaded$5 = true;
+	    loaded$6 = true;
 	  }
 
 	  return townMap;
@@ -7017,21 +7085,21 @@
 	}
 
 	const islandMap = new Map();
-	let loaded$6 = false;
+	let loaded$7 = false;
 
-	const trim$3 = str => {
+	const trim$4 = str => {
 	  if (!str) return '';
 	  return str.trim();
 	};
 
 	const getIslandData = async () => {
-	  if (!loaded$6) {
+	  if (!loaded$7) {
 	    const csv = await fetchWithHash('/blhxfy/data/island-info.csv');
 	    const list = parseCsv(csv);
 	    list.forEach(item => {
-	      const id = trim$3(item.id);
-	      const name = trim$3(item.name);
-	      const detail = trim$3(item.detail);
+	      const id = trim$4(item.id);
+	      const name = trim$4(item.name);
+	      const detail = trim$4(item.detail);
 
 	      if (id && name) {
 	        islandMap.set(id, {
@@ -7044,7 +7112,7 @@
 	        }
 	      }
 	    });
-	    loaded$6 = true;
+	    loaded$7 = true;
 	  }
 
 	  return islandMap;
@@ -7082,15 +7150,15 @@
 	}
 
 	const chatMap = new Map();
-	let loaded$7 = false;
+	let loaded$8 = false;
 
-	const trim$4 = str => {
+	const trim$5 = str => {
 	  if (!str) return '';
 	  return str.trim();
 	};
 
 	const getChatData = async () => {
-	  if (!loaded$7) {
+	  if (!loaded$8) {
 	    let csv = getLocalData('chat-preset');
 
 	    if (!csv) {
@@ -7100,14 +7168,14 @@
 
 	    const list = parseCsv(csv);
 	    list.forEach(item => {
-	      const id = trim$4(item.id);
-	      const trans = trim$4(item.trans);
+	      const id = trim$5(item.id);
+	      const trans = trim$5(item.trans);
 
 	      if (id && trans) {
 	        chatMap.set(id, trans);
 	      }
 	    });
-	    loaded$7 = true;
+	    loaded$8 = true;
 	  }
 
 	  return chatMap;
@@ -7133,21 +7201,21 @@
 	}
 
 	const voiceMap = new Map();
-	let loaded$8 = false;
+	let loaded$9 = false;
 
-	const trim$5 = str => {
+	const trim$6 = str => {
 	  if (!str) return '';
 	  return str.trim();
 	};
 
 	const getTownData$1 = async () => {
-	  if (!loaded$8) {
+	  if (!loaded$9) {
 	    const csv = await fetchWithHash('/blhxfy/data/voice-mypage.csv');
 	    const list = parseCsv(csv);
 	    list.forEach(item => {
-	      const path = trim$5(item.path);
-	      const trans = trim$5(item.trans);
-	      const duration = trim$5(item.duration) || 10;
+	      const path = trim$6(item.path);
+	      const trans = trim$6(item.trans);
+	      const duration = trim$6(item.duration) || 10;
 
 	      if (path && trans) {
 	        voiceMap.set(path, {
@@ -7156,7 +7224,7 @@
 	        });
 	      }
 	    });
-	    loaded$8 = true;
+	    loaded$9 = true;
 	  }
 
 	  return voiceMap;
@@ -7332,6 +7400,8 @@
 	      await showVoiceSub(data, pathname, 'list');
 	    } else if (pathname.includes('/rest/multiraid/start.json')) {
 	      data = await transChat(data);
+	    } else if (/\/rest\/multiraid\/condition\/\d+\/\d\/\d\.json/.test(pathname)) {
+	      await transBuff(data.condition);
 	    } else {
 	      return;
 	    }
