@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         碧蓝幻想翻译
 // @namespace    https://github.com/biuuu/BLHXFY
-// @version      0.11.0
+// @version      0.11.1
 // @description  碧蓝幻想的汉化脚本，提交新翻译请到 https://github.com/biuuu/BLHXFY
 // @icon         http://game.granbluefantasy.jp/favicon.ico
 // @author       biuuu
@@ -6764,11 +6764,19 @@
 	      }
 
 	      const [plus1, plus2] = getPlusStr(ability.name);
-	      let trans = skillData[key2 + plus2];
+	      let trans = skillData[`skill-${ability.name}`];
 
 	      if (!trans) {
-	        trans = skillData[key2];
-	        if (!trans) continue;
+	        trans = skillData[`special-${ability.name}`];
+
+	        if (!trans) {
+	          trans = skillData[key2 + plus2];
+
+	          if (!trans) {
+	            trans = skillData[key2];
+	            if (!trans) continue;
+	          }
+	        }
 	      }
 
 	      if (trans.name) {

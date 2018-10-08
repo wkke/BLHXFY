@@ -6750,11 +6750,19 @@
 	      }
 
 	      const [plus1, plus2] = getPlusStr(ability.name);
-	      let trans = skillData[key2 + plus2];
+	      let trans = skillData[`skill-${ability.name}`];
 
 	      if (!trans) {
-	        trans = skillData[key2];
-	        if (!trans) continue;
+	        trans = skillData[`special-${ability.name}`];
+
+	        if (!trans) {
+	          trans = skillData[key2 + plus2];
+
+	          if (!trans) {
+	            trans = skillData[key2];
+	            if (!trans) continue;
+	          }
+	        }
 	      }
 
 	      if (trans.name) {
