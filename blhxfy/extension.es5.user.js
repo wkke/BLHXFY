@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         碧蓝幻想翻译兼容版
 // @namespace    https://github.com/biuuu/BLHXFY
-// @version      0.11.1
+// @version      0.11.2
 // @description  碧蓝幻想的汉化脚本，提交新翻译请到 https://github.com/biuuu/BLHXFY
 // @icon         http://game.granbluefantasy.jp/favicon.ico
 // @author       biuuu
@@ -8863,13 +8863,15 @@
   var sortKeywords = function sortKeywords(list) {
     var key = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'name';
     return list.sort(function (prev, next) {
-      if (!next[key] || !prev[key] || next[key] === prev[key]) {
-        return 0;
-      } else if (next[key].includes(prev[key])) {
-        return 1;
-      } else {
-        return -1;
+      if (next[key] && prev[key]) {
+        if (next[key].includes(prev[key])) {
+          return 1;
+        } else if (prev[key].includes(next[key])) {
+          return -1;
+        }
       }
+
+      return 0;
     });
   };
 
