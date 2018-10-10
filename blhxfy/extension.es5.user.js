@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         碧蓝幻想翻译兼容版
 // @namespace    https://github.com/biuuu/BLHXFY
-// @version      0.11.3
+// @version      0.11.4
 // @description  碧蓝幻想的汉化脚本，提交新翻译请到 https://github.com/biuuu/BLHXFY
 // @icon         http://game.granbluefantasy.jp/favicon.ico
 // @author       biuuu
@@ -8872,9 +8872,9 @@
       }
 
       if (valNext && valPrev) {
-        if (valNext.includes(valPrev)) {
+        if (valNext.length > valPrev.length) {
           return 1;
-        } else if (valPrev.includes(valNext)) {
+        } else if (valPrev.length > valNext.length) {
           return -1;
         }
       }
@@ -8953,10 +8953,10 @@
               nameJp = _context.sent;
               listEn = nameWithScenario(parseCsv(nameEn));
               listJp = nameWithScenario(parseCsv(nameJp));
-              sortKeywords(listEn).forEach(function (item) {
+              sortKeywords(listEn, 'name').forEach(function (item) {
                 enNameMap.set(item.name, item);
               });
-              sortKeywords(listJp).forEach(function (item) {
+              sortKeywords(listJp, 'name').forEach(function (item) {
                 jpNameMap.set(item.name, item);
               });
               loaded = true;

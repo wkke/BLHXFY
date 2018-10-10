@@ -6228,9 +6228,9 @@
 	    }
 
 	    if (valNext && valPrev) {
-	      if (valNext.includes(valPrev)) {
+	      if (valNext.length > valPrev.length) {
 	        return 1;
-	      } else if (valPrev.includes(valNext)) {
+	      } else if (valPrev.length > valNext.length) {
 	        return -1;
 	      }
 	    }
@@ -6286,10 +6286,10 @@
 	    const nameJp = await fetchWithHash('/blhxfy/data/npc-name-jp.csv');
 	    const listEn = nameWithScenario(parseCsv(nameEn));
 	    const listJp = nameWithScenario(parseCsv(nameJp));
-	    sortKeywords(listEn).forEach(item => {
+	    sortKeywords(listEn, 'name').forEach(item => {
 	      enNameMap.set(item.name, item);
 	    });
-	    sortKeywords(listJp).forEach(item => {
+	    sortKeywords(listJp, 'name').forEach(item => {
 	      jpNameMap.set(item.name, item);
 	    });
 	    loaded = true;
