@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         碧蓝幻想翻译兼容版
 // @namespace    https://github.com/biuuu/BLHXFY
-// @version      0.11.2
+// @version      0.11.3
 // @description  碧蓝幻想的汉化脚本，提交新翻译请到 https://github.com/biuuu/BLHXFY
 // @icon         http://game.granbluefantasy.jp/favicon.ico
 // @author       biuuu
@@ -6399,10 +6399,10 @@
       return capability.promise;
     }
   });
-  _export(_export.S + _export.F * (_library || !USE_NATIVE$1), PROMISE, {
+  _export(_export.S + _export.F * (!USE_NATIVE$1), PROMISE, {
     // 25.4.4.6 Promise.resolve(x)
     resolve: function resolve(x) {
-      return _promiseResolve(_library && this === Wrapper ? $Promise : this, x);
+      return _promiseResolve(this, x);
     }
   });
   _export(_export.S + _export.F * !(USE_NATIVE$1 && _iterDetect(function (iter) {
@@ -8861,12 +8861,20 @@
   });
 
   var sortKeywords = function sortKeywords(list) {
-    var key = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'name';
+    var key = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'EMPTY';
     return list.sort(function (prev, next) {
-      if (next[key] && prev[key]) {
-        if (next[key].includes(prev[key])) {
+      var valPrev = prev;
+      var valNext = next;
+
+      if (key !== 'EMPTY') {
+        valPrev = prev[key];
+        valNext = next[key];
+      }
+
+      if (valNext && valPrev) {
+        if (valNext.includes(valPrev)) {
           return 1;
-        } else if (prev[key].includes(next[key])) {
+        } else if (valPrev.includes(valNext)) {
           return -1;
         }
       }
@@ -10486,6 +10494,39 @@
     };
   }();
 
+  var _createProperty = function (object, index, value) {
+    if (index in object) _objectDp.f(object, index, _propertyDesc(0, value));
+    else object[index] = value;
+  };
+
+  _export(_export.S + _export.F * !_iterDetect(function (iter) { }), 'Array', {
+    // 22.1.2.1 Array.from(arrayLike, mapfn = undefined, thisArg = undefined)
+    from: function from(arrayLike /* , mapfn = undefined, thisArg = undefined */) {
+      var O = _toObject(arrayLike);
+      var C = typeof this == 'function' ? this : Array;
+      var aLen = arguments.length;
+      var mapfn = aLen > 1 ? arguments[1] : undefined;
+      var mapping = mapfn !== undefined;
+      var index = 0;
+      var iterFn = core_getIteratorMethod(O);
+      var length, result, step, iterator;
+      if (mapping) mapfn = _ctx(mapfn, aLen > 2 ? arguments[2] : undefined, 2);
+      // if object isn't iterable or it's array with default iterator - use simple case
+      if (iterFn != undefined && !(C == Array && _isArrayIter(iterFn))) {
+        for (iterator = iterFn.call(O), result = new C(); !(step = iterator.next()).done; index++) {
+          _createProperty(result, index, mapping ? _iterCall(iterator, mapfn, [step.value, index], true) : step.value);
+        }
+      } else {
+        length = _toLength(O.length);
+        for (result = new C(length); length > index; index++) {
+          _createProperty(result, index, mapping ? mapfn(O[index], index) : O[index]);
+        }
+      }
+      result.length = index;
+      return result;
+    }
+  });
+
   var htmlMap = new Map();
   var loaded$4 = false;
 
@@ -10500,13 +10541,13 @@
     var _ref = _asyncToGenerator(
     /*#__PURE__*/
     regeneratorRuntime.mark(function _callee() {
-      var csv, list;
+      var csv, list, tempMap;
       return regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
               if (loaded$4) {
-                _context.next = 10;
+                _context.next = 12;
                 break;
               }
 
@@ -10526,6 +10567,7 @@
 
             case 7:
               list = parseCsv(csv);
+              tempMap = new Map();
               sortKeywords(list, 'text').forEach(function (item) {
                 var pathname = trim$1(item.path);
                 var text = trim$1(item.text);
@@ -10533,14 +10575,14 @@
                 var times = item.count | 0 || 1;
 
                 if (pathname && text && trans) {
-                  if (htmlMap.has(pathname)) {
-                    htmlMap.get(pathname).push({
+                  if (tempMap.has(pathname)) {
+                    tempMap.get(pathname).push({
                       text: text,
                       trans: trans,
                       times: times
                     });
                   } else {
-                    htmlMap.set(pathname, [{
+                    tempMap.set(pathname, [{
                       text: text,
                       trans: trans,
                       times: times
@@ -10548,12 +10590,15 @@
                   }
                 }
               });
+              sortKeywords(Array.from(tempMap.keys())).forEach(function (key) {
+                htmlMap.set(key, tempMap.get(key));
+              });
               loaded$4 = true;
 
-            case 10:
+            case 12:
               return _context.abrupt("return", htmlMap);
 
-            case 11:
+            case 13:
             case "end":
               return _context.stop();
           }

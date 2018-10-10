@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         碧蓝幻想翻译
 // @namespace    https://github.com/biuuu/BLHXFY
-// @version      0.11.2
+// @version      0.11.3
 // @description  碧蓝幻想的汉化脚本，提交新翻译请到 https://github.com/biuuu/BLHXFY
 // @icon         http://game.granbluefantasy.jp/favicon.ico
 // @author       biuuu
@@ -6231,12 +6231,20 @@
 	  }
 	};
 
-	const sortKeywords = (list, key = 'name') => {
+	const sortKeywords = (list, key = 'EMPTY') => {
 	  return list.sort((prev, next) => {
-	    if (next[key] && prev[key]) {
-	      if (next[key].includes(prev[key])) {
+	    let valPrev = prev;
+	    let valNext = next;
+
+	    if (key !== 'EMPTY') {
+	      valPrev = prev[key];
+	      valNext = next[key];
+	    }
+
+	    if (valNext && valPrev) {
+	      if (valNext.includes(valPrev)) {
 	        return 1;
-	      } else if (prev[key].includes(next[key])) {
+	      } else if (valPrev.includes(valNext)) {
 	        return -1;
 	      }
 	    }
@@ -6926,6 +6934,7 @@
 	    }
 
 	    const list = parseCsv(csv);
+	    const tempMap = new Map();
 	    sortKeywords(list, 'text').forEach(item => {
 	      const pathname = trim$1(item.path);
 	      const text = trim$1(item.text);
@@ -6933,20 +6942,23 @@
 	      const times = item.count | 0 || 1;
 
 	      if (pathname && text && trans) {
-	        if (htmlMap.has(pathname)) {
-	          htmlMap.get(pathname).push({
+	        if (tempMap.has(pathname)) {
+	          tempMap.get(pathname).push({
 	            text,
 	            trans,
 	            times
 	          });
 	        } else {
-	          htmlMap.set(pathname, [{
+	          tempMap.set(pathname, [{
 	            text,
 	            trans,
 	            times
 	          }]);
 	        }
 	      }
+	    });
+	    sortKeywords(Array.from(tempMap.keys())).forEach(key => {
+	      htmlMap.set(key, tempMap.get(key));
 	    });
 	    loaded$4 = true;
 	  }
