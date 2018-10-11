@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         碧蓝幻想翻译
 // @namespace    https://github.com/biuuu/BLHXFY
-// @version      0.11.4
+// @version      0.11.5
 // @description  碧蓝幻想的汉化脚本，提交新翻译请到 https://github.com/biuuu/BLHXFY
 // @icon         http://game.granbluefantasy.jp/favicon.ico
 // @author       biuuu
@@ -6736,6 +6736,23 @@
 	  return [plusStr, plusStr2];
 	};
 
+	const parseBuff = async data => {
+	  for (let item of skillKeys) {
+	    const key = item[0];
+	    let ability = data[key];
+
+	    if (!ability) {
+	      if (!data.ability) continue;
+	      ability = data.ability[key];
+	      if (!ability) continue;
+	    }
+
+	    if (ability.ability_detail) {
+	      await transBuff(ability.ability_detail);
+	    }
+	  }
+	};
+
 	const parseSkill = async (data, pathname) => {
 	  let npcId;
 
@@ -6747,6 +6764,7 @@
 	    npcId = data.id;
 	  }
 
+	  await parseBuff(data);
 	  const skillState = await getSkillData(npcId);
 	  if (!skillState) return data;
 	  const skillData = skillState.skillMap.get(npcId);
@@ -6763,10 +6781,6 @@
 	        if (!data.ability) continue;
 	        ability = data.ability[key1];
 	        if (!ability) continue;
-	      }
-
-	      if (ability.ability_detail) {
-	        await transBuff(ability.ability_detail);
 	      }
 
 	      if (ability.recast_comment) {
@@ -7436,7 +7450,7 @@
 	      await showVoiceSub(data, pathname, 'list');
 	    } else if (pathname.includes('/rest/multiraid/start.json')) {
 	      data = await transChat(data);
-	    } else if (/\/rest\/multiraid\/condition\/\d+\/\d\/\d\.json/.test(pathname)) {
+	    } else if (/\/rest\/.*?raid\/condition\/\d+\/\d\/\d\.json/.test(pathname)) {
 	      await transBuff(data.condition);
 	    } else {
 	      return;
