@@ -6368,7 +6368,7 @@
     <button onclick="window.blhxfy.previewCsv('save')" title="保存预览文本并刷新页面">保存</button>
   </div>
   <p>请将编辑好的剧情文本粘贴到文本框<a onclick="window.blhxfy.previewCsv('clear')" title="清除预览文本">清空</a></p>
-  <textarea placeholder="id,en,jp,trans\n……,……,……,……\n……,……,……,……"></textarea>
+  <textarea placeholder="剧情文本"></textarea>
 </div>
 `;
 	function insertToolHtml () {
