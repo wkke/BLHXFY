@@ -9938,6 +9938,40 @@
 	  return data;
 	}
 
+	const replaceTime = str => {
+	  if (!str) return str;
+	  return str.replace('時間', '小时');
+	};
+
+	const pageIndex = async data => {
+	  let messages;
+	  let mydata;
+	  let status;
+
+	  try {
+	    mydata = data.option.mydata_assets.mydata;
+	    messages = mydata.messages;
+	    status = mydata.status;
+	  } catch (err) {
+	    console.error(err);
+	    return data;
+	  }
+
+	  if (messages.length) {
+	    const newMessages = [];
+	    messages.forEach(item => {
+	      if (item.url !== 'news/detail/1/20002') {
+	        newMessages.push(item);
+	      }
+	    });
+	    mydata.messages = newMessages;
+	  }
+
+	  status.action_point_remain = replaceTime(status.action_point_remain);
+	  status.battle_point_remain = replaceTime(status.battle_point_remain);
+	  return data;
+	};
+
 	const voiceMap = new Map();
 	let loaded$9 = false;
 
@@ -10127,6 +10161,7 @@
 
 	      if (pathname.includes('/user/content/index')) {
 	        data = await transTownInfo(data, pathname);
+	        data = await pageIndex(data, pathname);
 	      }
 	    } else if (pathname.includes('/npc/npc/') || pathname.includes('/archive/npc_detail')) {
 	      data = await parseSkill(data, pathname);

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         碧蓝幻想翻译兼容版
 // @namespace    https://github.com/biuuu/BLHXFY
-// @version      0.12.2
+// @version      0.12.3
 // @description  碧蓝幻想的汉化脚本，提交新翻译请到 https://github.com/biuuu/BLHXFY
 // @icon         http://game.granbluefantasy.jp/favicon.ico
 // @author       biuuu
@@ -14111,6 +14111,63 @@
     return _transChat.apply(this, arguments);
   }
 
+  var replaceTime = function replaceTime(str) {
+    if (!str) return str;
+    return str.replace('時間', '小时');
+  };
+
+  var pageIndex =
+  /*#__PURE__*/
+  function () {
+    var _ref = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee(data) {
+      var messages, mydata, status, newMessages;
+      return regeneratorRuntime.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              _context.prev = 0;
+              mydata = data.option.mydata_assets.mydata;
+              messages = mydata.messages;
+              status = mydata.status;
+              _context.next = 10;
+              break;
+
+            case 6:
+              _context.prev = 6;
+              _context.t0 = _context["catch"](0);
+              console.error(_context.t0);
+              return _context.abrupt("return", data);
+
+            case 10:
+              if (messages.length) {
+                newMessages = [];
+                messages.forEach(function (item) {
+                  if (item.url !== 'news/detail/1/20002') {
+                    newMessages.push(item);
+                  }
+                });
+                mydata.messages = newMessages;
+              }
+
+              status.action_point_remain = replaceTime(status.action_point_remain);
+              status.battle_point_remain = replaceTime(status.battle_point_remain);
+              return _context.abrupt("return", data);
+
+            case 14:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee, this, [[0, 6]]);
+    }));
+
+    return function pageIndex(_x) {
+      return _ref.apply(this, arguments);
+    };
+  }();
+
   var voiceMap = new Map();
   var loaded$9 = false;
 
@@ -14423,7 +14480,7 @@
               }
 
               if (!(apiHosts.indexOf(hostname) !== -1)) {
-                _context.next = 65;
+                _context.next = 68;
                 break;
               }
 
@@ -14438,12 +14495,12 @@
 
             case 11:
               data = _context.sent;
-              _context.next = 63;
+              _context.next = 66;
               break;
 
             case 14:
               if (!pathname.includes('/content/')) {
-                _context.next = 28;
+                _context.next = 31;
                 break;
               }
 
@@ -14463,7 +14520,7 @@
               data = _context.sent;
 
               if (!pathname.includes('/user/content/index')) {
-                _context.next = 26;
+                _context.next = 29;
                 break;
               }
 
@@ -14472,95 +14529,93 @@
 
             case 25:
               data = _context.sent;
-
-            case 26:
-              _context.next = 63;
-              break;
+              _context.next = 28;
+              return pageIndex(data, pathname);
 
             case 28:
-              if (!(pathname.includes('/npc/npc/') || pathname.includes('/archive/npc_detail'))) {
-                _context.next = 34;
-                break;
-              }
+              data = _context.sent;
 
-              _context.next = 31;
-              return parseSkill(data, pathname);
+            case 29:
+              _context.next = 66;
+              break;
 
             case 31:
-              data = _context.sent;
-              _context.next = 63;
-              break;
+              if (!(pathname.includes('/npc/npc/') || pathname.includes('/archive/npc_detail'))) {
+                _context.next = 37;
+                break;
+              }
+
+              _context.next = 34;
+              return parseSkill(data, pathname);
 
             case 34:
-              if (!(pathname.includes('/party_ability_subaction/') || pathname.includes('/party/job/') || pathname.includes('/party/ability_list/') || pathname.includes('/zenith/ability_list/') || pathname.includes('/party/job_info/'))) {
-                _context.next = 40;
-                break;
-              }
-
-              _context.next = 37;
-              return transSkill$1(data, pathname);
+              data = _context.sent;
+              _context.next = 66;
+              break;
 
             case 37:
-              data = _context.sent;
-              _context.next = 63;
-              break;
+              if (!(pathname.includes('/party_ability_subaction/') || pathname.includes('/party/job/') || pathname.includes('/party/ability_list/') || pathname.includes('/zenith/ability_list/') || pathname.includes('/party/job_info/'))) {
+                _context.next = 43;
+                break;
+              }
+
+              _context.next = 40;
+              return transSkill$1(data, pathname);
 
             case 40:
-              if (!pathname.includes('/island/init')) {
-                _context.next = 46;
-                break;
-              }
-
-              _context.next = 43;
-              return transIslandInfo(data, pathname);
+              data = _context.sent;
+              _context.next = 66;
+              break;
 
             case 43:
-              data = _context.sent;
-              _context.next = 63;
-              break;
+              if (!pathname.includes('/island/init')) {
+                _context.next = 49;
+                break;
+              }
+
+              _context.next = 46;
+              return transIslandInfo(data, pathname);
 
             case 46:
-              if (!pathname.includes('/rest/sound/mypage_voice')) {
-                _context.next = 51;
-                break;
-              }
-
-              _context.next = 49;
-              return showVoiceSub(data, pathname, 'list');
+              data = _context.sent;
+              _context.next = 66;
+              break;
 
             case 49:
-              _context.next = 63;
-              break;
-
-            case 51:
-              if (!pathname.includes('/rest/multiraid/start.json')) {
-                _context.next = 57;
+              if (!pathname.includes('/rest/sound/mypage_voice')) {
+                _context.next = 54;
                 break;
               }
 
-              _context.next = 54;
-              return transChat(data);
+              _context.next = 52;
+              return showVoiceSub(data, pathname, 'list');
+
+            case 52:
+              _context.next = 66;
+              break;
 
             case 54:
-              data = _context.sent;
-              _context.next = 63;
-              break;
-
-            case 57:
-              if (!/\/rest\/.*?raid\/condition\/\d+\/\d\/\d\.json/.test(pathname)) {
-                _context.next = 62;
+              if (!pathname.includes('/rest/multiraid/start.json')) {
+                _context.next = 60;
                 break;
               }
 
-              _context.next = 60;
-              return transBuff(data.condition);
+              _context.next = 57;
+              return transChat(data);
 
-            case 60:
-              _context.next = 63;
+            case 57:
+              data = _context.sent;
+              _context.next = 66;
               break;
 
-            case 62:
-              return _context.abrupt("return");
+            case 60:
+              if (!/\/rest\/.*?raid\/condition\/\d+\/\d\/\d\.json/.test(pathname)) {
+                _context.next = 65;
+                break;
+              }
+
+              _context.next = 63;
+              return transBuff(data.condition);
 
             case 63:
               _context.next = 66;
@@ -14570,9 +14625,16 @@
               return _context.abrupt("return");
 
             case 66:
+              _context.next = 69;
+              break;
+
+            case 68:
+              return _context.abrupt("return");
+
+            case 69:
               state.result = isJSON ? JSON.stringify(data) : data;
 
-            case 67:
+            case 70:
             case "end":
               return _context.stop();
           }
