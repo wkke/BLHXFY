@@ -1,6 +1,6 @@
 id,en,jp,trans
 0-chapter_name,,ひと安心？黒い野望はつづく,暂时安心？黑暗的野心仍将继续
-0-synopsis,,姬塔達の猛攻を受け追い詰められたピーサードは、ブラックとホワイトが放った「プリキュア?マーブル?スクリュー」により敗北を喫し、逃げていった。ピーサードが去ったことにより村人達の石化も解け、ひとまずは一件落着だと食事処で腹ごしらえする一行。しかしその数日後、ピーサードはとある帝国軍の拠点で復讐への闘志を燃やしているのだった。,受到姬塔一行的猛攻走投无路的皮萨德因为Black和White释放的「光之美少女 亮晶晶黑白回转」而败北逃走了。因为皮萨德败走的缘故，村民们的石化也被解开，一行人暂时了结了这件事，为了填饱肚子而来到了饭店。然而数日后，在帝国军的某处据点里，皮萨德燃起了复仇的斗志。
+0-synopsis,,姬塔達の猛攻を受け追い詰められたピーサードは、ブラックとホワイトが放った「プリキュア?マーブル?スクリュー」により敗北を喫し、逃げていった。ピーサードが去ったことにより村人達の石化も解け、ひとまずは一件落着だと食事処で腹ごしらえする一行。しかしその数日後、ピーサードはとある帝国軍の拠点で復讐への闘志を燃やしているのだった。,受到姬塔一行的猛攻走投无路的皮萨德因为Black和White释放的「光之美少女 亮晶晶黑白回转」而败北逃走了。因为皮萨德败走的缘故，村民们的石化也被解开，事态暂时算是解决了，于是一行人为了填饱肚子而来到了饭店。然而数日后，在帝国军的某处据点里，皮萨德燃起了复仇的斗志。
 1,,ぐぅ……！,咕……！
 4,,<span class='scene-font-katari'>姬塔たちの猛攻を受け、</span><br><span class='scene-font-katari'>ピーサードは体勢を立て直そうと</span><br><span class='scene-font-katari'>一度空へ退避する。</span>,<span class='scene-font-katari'>受到姬塔一行的猛攻，</span><br><span class='scene-font-katari'>皮萨德为了重整态势</span><br><span class='scene-font-katari'>而暂时退回到了空中。</span>
 5,,今よ！,趁现在！
@@ -56,5 +56,5 @@ id,en,jp,trans
 85,,<span class='scene-font-katari'>口元を歪め、</span><br><span class='scene-font-katari'>クスクスと肩を震わせるピーサード。</span>,<span class='scene-font-katari'>皮萨德咧着嘴，</span><br><span class='scene-font-katari'>肩膀一颤一颤地笑了起来。</span>
 86,,<span class='scene-font-katari'>彼の瞳に湛えられた闘志は、</span><br><span class='scene-font-katari'>新たなる波乱の幕開けを</span><br><span class='scene-font-katari'>物語っているのだった。</span>,<span class='scene-font-katari'>他眼中浮现出的斗志</span><br><span class='scene-font-katari'>正预示着另一场</span><br><span class='scene-font-katari'>骚乱的开始。</span>
 87,,<span class='scene-font-katari'>　</span><br><span class='scene-font-katari'>　</span><br><span class='scene-font-katari'>　　　　　　　　　　　　　──つづく</span>,<span class='scene-font-katari'>　</span><br><span class='scene-font-katari'>　</span><br><span class='scene-font-katari'>　　　　　　　　　　　　　──待续</span>
-info,,1,1
+info,,1,scene_evt181014_cp0_q2_s10
 ,,,
