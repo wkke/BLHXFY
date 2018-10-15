@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         碧蓝幻想翻译
 // @namespace    https://github.com/biuuu/BLHXFY
-// @version      0.12.1
+// @version      0.12.2
 // @description  碧蓝幻想的汉化脚本，提交新翻译请到 https://github.com/biuuu/BLHXFY
 // @icon         http://game.granbluefantasy.jp/favicon.ico
 // @author       biuuu
@@ -9047,9 +9047,9 @@
 	    let trans = getNameTrans(name, map, scenarioName);
 	    let _name = name;
 
-	    if (/\s?[\?？0-9０－９]{1,2}$/.test(name)) {
+	    if (/\s?[\?？0-9０-９]{1,2}$/.test(name)) {
 	      // name with number or symbol
-	      const nameRst = name.match(/(.+?)\s?([\?？0-9０－９]{1,2})$/);
+	      const nameRst = name.match(/(.+?)\s?([\?？0-9０-９]{1,2})$/);
 
 	      const _trans = getNameTrans(nameRst[1], map, scenarioName);
 

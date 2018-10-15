@@ -9033,9 +9033,9 @@
 	    let trans = getNameTrans(name, map, scenarioName);
 	    let _name = name;
 
-	    if (/\s?[\?？0-9０－９]{1,2}$/.test(name)) {
+	    if (/\s?[\?？0-9０-９]{1,2}$/.test(name)) {
 	      // name with number or symbol
-	      const nameRst = name.match(/(.+?)\s?([\?？0-9０－９]{1,2})$/);
+	      const nameRst = name.match(/(.+?)\s?([\?？0-9０-９]{1,2})$/);
 
 	      const _trans = getNameTrans(nameRst[1], map, scenarioName);
 
